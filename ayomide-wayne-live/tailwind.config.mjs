@@ -33,6 +33,7 @@ export default {
     },
     fontFamily: {
       playfair: ["var(--font-playfair)"],
+      greatvibes: ["var(--font-greatvibes)"],
     },
     extend: {
       colors: {

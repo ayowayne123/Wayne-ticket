@@ -1,4 +1,4 @@
-import { Playfair_Display, Inter } from "next/font/google";
+import { Playfair_Display,Great_Vibes, Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "./header";
 
@@ -6,9 +6,14 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
 });
+const greatVibes = Great_Vibes({
+  variable: "--font-greatvibes",
+  weight: "400",
+  subsets: ["latin"],
+});
 
-const inter = Inter({
-  variable: "--font-inter",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
 });
 
@@ -22,7 +27,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       
       <body
-        className={`${playfair.variable} ${inter.className} antialiased`}
+        className={`${playfair.variable} ${greatVibes.variable} ${montserrat.className} antialiased`}
       >
 <Header/>
         {children}
