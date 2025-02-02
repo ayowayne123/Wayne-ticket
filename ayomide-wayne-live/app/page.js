@@ -3,16 +3,17 @@ import Hero from "./hero";
 import About from "./about";
 import Tickets from "./tickets";
 import Ticket from "./ticketCard";
+import ComeBack from "./comeBack";
 
 export default function Home() {
   return (
     <div>
-   <Hero/>
+   {/* <Hero/>
    <About/>
    <div className="container"><Ticket/></div>
    
-   <Tickets/>
-   
+   <Tickets/> */}
+   <ComeBack/>
     
     </div>
   );

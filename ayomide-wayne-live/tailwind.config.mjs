@@ -39,6 +39,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'tls-Green': "#466612",
+        'tls-Orange': "#be883b",
       },
     },
   },

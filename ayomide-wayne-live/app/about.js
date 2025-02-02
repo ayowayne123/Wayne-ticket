@@ -16,7 +16,7 @@ return(
       </div>
       <div className="border border-black rounded-lg overflow-hidden h-40 w-60 shrink-0 flex gap-2 flex-col items-center justify-center p-4 ">
 <h1 className="font-bold uppercase text-xl text-center">The Listening Sheep</h1>
-<Link scroll href='#tickets' className="bg-emerald-700 p-3 text-white">Book Now</Link>
+<Link scroll href='#tickets' className="bg-tls-Green p-3 text-white">Book Now</Link>
       </div>
       </div>
     </section>
