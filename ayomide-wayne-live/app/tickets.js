@@ -375,7 +375,13 @@ handlePaidTickets();
         }
       }}
     >
-      Confirm
+       {isProcessing ? (
+    <div className="flex justify-center items-center">
+      <div className="w-4 h-4 border-4 border-t-transparent border-solid border-white rounded-full animate-spin"></div>
+    </div>
+  ) : (
+    "confirm"
+  )}
     </button>
   </div>
 )}
@@ -548,7 +554,7 @@ handlePaidTickets();
       <div className="w-4 h-4 border-4 border-t-transparent border-solid border-white rounded-full animate-spin"></div>
     </div>
   ) : (
-    "Confirm"
+    "I have Made Payment"
   )}
     </Button>
   </div>
