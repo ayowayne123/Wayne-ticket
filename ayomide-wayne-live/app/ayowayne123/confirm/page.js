@@ -56,7 +56,7 @@ export default function TicketManagement() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 mt-10">
       <h1 className="text-2xl font-semibold mb-4">Ticket Management</h1>
 
       {loading ? (
