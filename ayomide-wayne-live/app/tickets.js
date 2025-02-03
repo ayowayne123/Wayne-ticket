@@ -396,6 +396,18 @@ handlePaidTickets();
     
     {/* Left Column - List of Banks */}
     <div className="w-full md:w-1/3 border-r border-gray-300 p-2 lg:p-4">
+     
+      <div className="mt-4">
+        {paymentMethod === "Naira transfer" ? (
+          <p className="font-medium">
+            Total: <span className="text-gray-700">₦{totalAmount*48}</span>
+          </p>
+        ) : (
+          <p className="font-medium">
+            Total: <span className="text-gray-700">{totalAmount} TL</span>
+          </p>
+        )}
+      </div>
       <h3 className="lg:text-lg  font-semibold mb-4">Pay With</h3>
       
       {paymentMethod === "Naira Transfer" &&
