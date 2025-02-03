@@ -9,7 +9,7 @@ export default {
     container: {
       center: true,
       padding: {
-        DEFAULT: '0.5rem',
+        DEFAULT: '1rem',
         sm: '1rem',
         lg: '2rem',
         xl: '2rem',
@@ -17,7 +17,7 @@ export default {
       },
     },
     screens: {
-      'sm': '640px',
+      'sm': '380px',
       // => @media (min-width: 640px) { ... }
 
       'md': '768px',

@@ -8,12 +8,12 @@ import ComeBack from "./comeBack";
 export default function Home() {
   return (
     <div>
-   {/* <Hero/>
+   <Hero/>
    <About/>
    <div className="container"><Ticket/></div>
    
-   <Tickets/> */}
-   <ComeBack/>
+   <Tickets/>
+   {/* <ComeBack/> */}
     
     </div>
   );

@@ -1,29 +1,26 @@
 "use client";
-
+import toast from "react-hot-toast";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 import { Select, SelectItem } from "@/components/ui/select";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
+import gtLogo from "@/public/Banks/GtLogo.png"
+import zenithLogo from "@/public/Banks/Zenith.png"
+import garantiLogo from "@/public/Banks/Garanti.png"
+import novaLogo from "@/public/Banks/Nova.png"
+import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import { Toaster } from "react-hot-toast";
 
-const locations = ["Girne", "Lefkosa", "Magusa", "Iskele", "Lefke", "Guzelyurt"];
-const paymentMethods = ["Cash", "Naira Transfer", "TL Transfer"];
-const nairaAccounts = [
-  { name: "Benjamin Mayowa Oguntoye", number: "0128830047", bank: "GTBank" },
-  { name: "Godwin Ayomide Ogu", number: "2088343479", bank: "Zenith Bank" },
-];
-const tlAccounts = [
-  { name: "Isbank", iban: "TRXXXXXX" },
-  { name: "Novabank", account: "1234567890" },
-  { name: "Garanti Bank", iban: "TRXXXXXX" },
-  { name: "Ziraat", iban: "TRXXXXXX" },
-  { name: "Neubank", iban: "TRXXXXXX" },
-];
 
 export default function Tickets() {
+  const router = useRouter();
   const [currentTab, setCurrentTab] = useState(1);
   const [ticketType, setTicketType] = useState(null);
+  const [selectedBank, setSelectedBank] = useState(null);
   const [payForwardCount, setPayForwardCount] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -37,6 +34,19 @@ export default function Tickets() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  const locations = ["Girne", "Lefkosa", "Magusa", "Iskele", "Lefke", "Guzelyurt"];
+const paymentMethods = ["Cash", "Naira Transfer", "TL Transfer"];
+const nairaAccounts = [
+  { name: "Benjamin Mayowa Oguntoye", number: "0128830047", bank: "GTBank", logo: gtLogo },
+  { name: "Godwin Ayomide Ogu", number: "2088343479", bank: "Zenith Bank" , logo: zenithLogo},
+];
+const tlAccounts = [
+  { name: "Eniola Akinloluwa Sowunmi ", account: "700087269",bank: "NovaBank", logo: novaLogo },
+  { name: "Benjamin Mayowa Oguntoye", iban: "TR41 0006 2000 4930 0006 6451 22",bank: "Garanti", logo: garantiLogo },
+  // { name: "Garanti Bank", iban: "TRXXXXXX" },
+  // { name: "Ziraat", iban: "TRXXXXXX" },
+  // { name: "Neubank", iban: "TRXXXXXX" },
+];
   const ticketPrices = {
     free: 0,
     single: 150,
@@ -53,7 +63,7 @@ export default function Tickets() {
   }, [isDialogOpen, timer]);
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.selectedValue || e.target.value });
   };
 
   const handleTicketBooking = () => {
@@ -62,23 +72,89 @@ export default function Tickets() {
     }
   };
 
-  const handleSubmit = () => {
-    if (ticketType === "free") {
-      // Log everything to the console if the payment method is Free
-      console.log("Form Data:", formData);
-      console.log("Ticket Type:", ticketType);
-      console.log("Total Amount:", totalAmount);
-      console.log("Payment Method:", paymentMethod);
-      // You can also add more data as needed
+  const handleSubmit = async () => {
+    // Check if all required fields are filled out before proceeding
+    if (!formData.name || !formData.email || !formData.phone ) {
+      alert('Please fill in all fields before submitting.');
+      return; // Prevent further execution if form is incomplete
+    }
+    console.log(formData)
   
-      // Optionally, handle what happens after logging, like moving to the next step
-      setShowConfirmation(true);
-    
+    if (ticketType === "free") {
+      const requestData = {
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        location: formData.location || "Girne",
+        numberOfTickets: 1,
+        paymentType: "free",
+      };
+  
+      try {
+        const response = await fetch('https://api.thelisteningsheeptickets.live/api/tickets/book', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+  
+        const data = await response.json();
+  
+        console.log('Response from server:', data);
+  
+        if (response.ok) {
+          setShowConfirmation(true);
+          router.push(`/ticket-confirmation/${data.data.referenceNumber}`);
+        } else {
+          console.error('Failed to book ticket:', data);
+        }
+      } catch (error) {
+        console.error('Error occurred during booking:', error);
+      }
     } else {
-      setShowConfirmation(true);
       setCurrentTab(3); // Proceed to the next tab for non-Free payments
     }
   };
+  
+
+  const handlePaidTickets = async () => {
+   
+      const requestData = {
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        location: formData.location || "Girne",
+        numberOfTickets: payForwardCount || 1,
+        paymentType: "paid",
+      };
+      try {
+        const response = await fetch('https://api.thelisteningsheeptickets.live/api/tickets/book', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+  
+        const data = await response.json();
+  
+        // Log the response to the console
+        console.log('Response from server:', data);
+  
+        // Handle successful response
+        if (response.ok) {
+          setShowConfirmation(true); // Show confirmation after a successful booking
+          router.push(`/ticket-pending/${data.data.referenceNumber}`);
+        } else {
+          console.error('Failed to book ticket:', data);
+        }
+      } catch (error) {
+        console.error('Error occurred during booking:', error);
+      }
+    }
+ 
+  
 
   const handlePaymentSelection = (method) => {
     setPaymentMethod(method);
@@ -94,7 +170,8 @@ export default function Tickets() {
 
   return (
     <section id="tickets" className="container py-8">
-      <h2 className="text-2xl font-bold uppercase">Tickets</h2>
+      <div><Toaster/></div>
+      <h2 className="lg:text-2xl text-xl font-bold uppercase pb-6">Tickets</h2>
 
       <div className="tabs">
         <span>{currentTab === 1 ? "Step 1: Select Ticket" : currentTab === 2 ? "Step 2: Personal Information" : "Step 3: Payment Method"}</span>
@@ -119,11 +196,11 @@ export default function Tickets() {
               />
               <label
                 htmlFor={type}
-                className={`cursor-pointer py-4 px-4 border-2 rounded-xl flex flex-col gap-3 ${
+                className={`cursor-pointer lg:py-4 lg:px-4 px-2 py-2 lg:text-base text-sm border-2 rounded-xl flex flex-col gap-3 ${
                   ticketType === type ? "text-tls-Green border-tls-Green" : "text-gray-400 border-gray-400"
                 }`}
               >
-                <span className="font-semibold text-xl">
+                <span className="font-semibold lg:text-xl">
                   {type === "free" ? "Free Ticket" : type === "single" ? "Buy 1 Ticket" : "Pay Forward (Max 10)"}
                 </span>
                 <span className="flex flex-row justify-between items-center">
@@ -162,7 +239,7 @@ export default function Tickets() {
             <button onClick={handleTicketBooking} disabled={!ticketType} className="bg-tls-Green px-4 py-2 rounded-lg font-semibold transition duration-300 text-white hover:bg-black">
               Book Ticket
             </button>
-            <button className="bg-tls-Orange px-4 py-2 rounded-lg font-semibold transition duration-300 text-white hover:bg-black" onClick={handleBack} disabled={currentTab === 1}>Back</button>
+            
           </li>
         </ul>
       )}
@@ -187,17 +264,42 @@ export default function Tickets() {
          placeholder="Phone Number"
          onChange={handleInputChange}
        />
-       <Select
-         className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-tls-Green focus:border-tls-Green"
-         name="location"
-         onChange={handleInputChange}
-       >
-         {locations.map((loc) => (
-           <SelectItem key={loc} value={loc}>
-             {loc}
-           </SelectItem>
-         ))}
-       </Select>
+      <select
+    className="w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-tls-Green focus:border-tls-Green"
+    name="location"
+    onChange={handleInputChange}
+  >
+    {locations.map((loc) => (
+      <option key={loc} value={loc}>
+        {loc}
+      </option>
+    ))}
+  </select>
+  <div className="my-4">
+    <label className="block text-gray-700">Have you ever attended a Spoken Word event?</label>
+    <div className="flex space-x-4 mt-2">
+      <label className="inline-flex items-center">
+        <input
+          type="radio"
+          name="attendedBefore"
+          value="yes"
+          onChange={handleInputChange}
+          className="form-radio"
+        />
+        <span className="ml-2">Yes</span>
+      </label>
+      <label className="inline-flex items-center">
+        <input
+          type="radio"
+          name="attendedBefore"
+          value="no"
+          onChange={handleInputChange}
+          className="form-radio"
+        />
+        <span className="ml-2">No</span>
+      </label>
+    </div>
+    </div>
        <button onClick={handleSubmit} className="w-full py-3 mt-4 bg-tls-Green text-white font-semibold rounded-lg hover:bg-tls-Green/80 focus:outline-none focus:ring-2 focus:ring-tls-Green focus:ring-offset-2">
          Proceed
        </button>
@@ -239,9 +341,13 @@ export default function Tickets() {
     {/* Confirm button */}
     <button className="w-32 py-3 mt-4 bg-tls-Green text-white font-semibold rounded-lg hover:bg-tls-Green/80 focus:outline-none focus:ring-2 focus:ring-tls-Green focus:ring-offset-2"
       onClick={() => {
-        if (paymentMethod) {
+        if (paymentMethod === "Naira Transfer" || paymentMethod === "TL Transfer") {
           setIsDialogOpen(true); // Open dialog when a payment method is selected
-        } else {
+        }
+        else if (paymentMethod === "Cash"){
+handlePaidTickets();
+        }
+        else {
           alert("Please select a payment method.");
         }
       }}
@@ -250,19 +356,163 @@ export default function Tickets() {
     </button>
   </div>
 )}
+{
+    (currentTab === 2 || currentTab === 3) && (
+        <button
+            className="bg-tls-Orange px-4 py-2 rounded-lg font-semibold transition duration-300 text-white hover:bg-black"
+            onClick={handleBack}
+            disabled={currentTab === 1}
+        >
+            Back
+        </button>
+    )
+}
 
-      <Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-        <h3>Payment Information</h3>
-        {paymentMethod === "Naira Transfer" && nairaAccounts.map((acc, idx) => (
-          <p key={idx}>{acc.bank}: {acc.name}, {acc.number}</p>
+
+<Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+  <div className="flex flex-col md:flex-row w-full p-2 lg:p-4">
+    
+    {/* Left Column - List of Banks */}
+    <div className="w-full md:w-1/3 border-r border-gray-300 p-2 lg:p-4">
+      <h3 className="lg:text-lg  font-semibold mb-4">Pay With</h3>
+      
+      {paymentMethod === "Naira Transfer" &&
+        nairaAccounts.map((acc, idx) => (
+          <button
+            key={idx}
+            className={`w-full flex lg:flex-col flex-row items-start gap-2 p-3 border rounded-lg mb-2 
+              ${selectedBank?.number === acc.number ? "border-green-500 bg-green-100" : "border-gray-300"}`}
+            onClick={() => setSelectedBank(acc)}
+          >
+            {/* Bank Logo & Name */}
+            <div className="flex items-center w-full gap-4">
+              <div className="bg-slate-300 h-12 w-12 flex items-center justify-center rounded-md">
+                <Image src={acc.logo} width={32} height={32} className="object-contain" alt="Bank Logo" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{acc.bank}</span>
+              </div>
+            </div>
+          </button>
         ))}
-        {paymentMethod === "TL Transfer" && tlAccounts.map((acc, idx) => (
-          <p key={idx}>{acc.name}: {acc.iban || acc.account}</p>
 
+{paymentMethod === "TL Transfer" &&
+              tlAccounts.map((acc, idx) => (
+                <button
+            key={idx}
+            className={`w-full flex flex-col items-start gap-2 p-3 border rounded-lg mb-2 
+              ${selectedBank?.account === acc.account || selectedBank?.iban === acc.iban ? "border-green-500 bg-green-100" : "border-gray-300"}`}
+            onClick={() => setSelectedBank(acc)}
+          >
+            {/* Bank Logo & Name */}
+            <div className="flex items-center w-full gap-4">
+              <div className=" h-16 w-16 flex items-center justify-center rounded-md">
+                <Image src={acc.logo} width={60} height={32} className="object-contain" alt="Bank Logo" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{acc.bank}</span>
+              </div>
+            </div>
+          </button>
+              ))} 
+        
+    </div>
+
+    {/* Right Column - Selected Bank Details */}
+    <div className="w-full md:w-2/3 p-4">
+      <h3 className="text-lg font-semibold mb-4">Payment Details</h3>
+
+      {selectedBank ? (
+        <div className="bg-gray-100 p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold">{selectedBank.bank || selectedBank.name}</h2>
           
-        ))}
-        <p>Time left: {Math.floor(timer / 60)}:{timer % 60}</p>
-      </Dialog>
+          {/* Name & Copy */}
+          {selectedBank.name && (
+            <div className="flex justify-between items-center mt-2">
+              <p className="font-medium">Name: <span className="text-gray-700">{selectedBank.name}</span></p>
+              <FaCopy 
+                className="cursor-pointer text-gray-500 hover:text-gray-700"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(selectedBank.name);
+                  toast("Copied to clipboard!", {
+                    position: "bottom-center",
+                    duration: 1200, // Duration should be inside the same object
+                  });
+                }}
+              />
+            </div>
+          )}
+
+          {/* Account Number & Copy */}
+          {selectedBank.number && (
+            <div className="flex justify-between items-center mt-2">
+              <p className="font-medium">Account Number: <span className="text-gray-700">{selectedBank.number}</span></p>
+              <FaCopy 
+                className="cursor-pointer text-gray-500 hover:text-gray-700"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(selectedBank.number);
+                  toast("Copied to clipboard!", {
+                    position: "bottom-center",
+                    duration: 1200, // Duration should be inside the same object
+                  });
+                }}
+              />
+            </div>
+          )}
+
+          {/* Account Number & Copy */}
+{selectedBank?.account && (
+  <div className="flex justify-between items-center mt-2">
+    <p className="font-medium">Account Number: <span className="text-gray-700">{selectedBank.account}</span></p>
+    <FaCopy 
+      className="cursor-pointer text-gray-500 hover:text-gray-700"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(selectedBank.account);
+        toast("Copied to clipboard!", {
+          position: "bottom-center",
+          duration: 1200, // Duration should be inside the same object
+        });
+      }}
+    />
+  </div>
+)}
+
+{/* IBAN (if available) */}
+{selectedBank?.iban && (
+  <div className="flex justify-between items-center mt-2">
+    <p className="font-medium">IBAN: <span className="text-gray-700">{selectedBank.iban}</span></p>
+    <FaCopy 
+      className="cursor-pointer text-gray-500 hover:text-gray-700"
+      onClick={(e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(selectedBank.iban);
+        toast("Copied to clipboard!", {
+          position: "bottom-center",
+          duration: 1200, // Duration should be inside the same object
+        });
+      }}
+    />
+  </div>
+)}
+        </div>
+      ) : (
+        <p className="text-gray-500">Select a bank to see details</p>
+      )}
+    </div>
+  </div>
+
+  {/* Timer & Confirm Button */}
+  <div className="p-4 border-t mt-4 flex justify-between items-center">
+    <p className="text-red-500">Time left: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}</p>
+    <Button onClick={handlePaidTickets} className="bg-emerald-800 p-4 text-white">
+      I've sent the Money
+    </Button>
+  </div>
+</Dialog>
+
 
     
     </section>

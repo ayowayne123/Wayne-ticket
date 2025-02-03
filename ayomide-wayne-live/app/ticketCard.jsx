@@ -5,7 +5,11 @@ import ticket from "@/public/ticket.png"
 
 function Ticket() {
   return (
-    <Image src={ticket} alt='ticket' className="w-full object-cover max-w-md   h-40 text-white flex items-center justify-center rounded-lg shadow-lg overflow-hidden"/>
+    <div className="relative lg:h-40 w-[300px] sm:w-[380px] h-36 lg:w-[460px]">
+
+<Image src={ticket} alt='ticket' fill className="w-full object-contain   text-white flex items-center justify-center rounded-lg shadow-lg overflow-hidden"/>
+    </div>
+    
   );
 }
 

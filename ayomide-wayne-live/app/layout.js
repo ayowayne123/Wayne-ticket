@@ -1,6 +1,7 @@
 import { Playfair_Display,Great_Vibes, Montserrat } from "next/font/google";
 import "./globals.css";
 import Header from "./header";
+import Footer from "./footer";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
       >
 <Header/>
         {children}
+        <Footer/>
       </body>
     </html>
   );
