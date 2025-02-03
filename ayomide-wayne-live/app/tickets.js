@@ -21,6 +21,9 @@ export default function Tickets() {
   const [currentTab, setCurrentTab] = useState(1);
   const [ticketType, setTicketType] = useState(null);
   const [selectedBank, setSelectedBank] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const [payForwardCount, setPayForwardCount] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -73,10 +76,12 @@ const tlAccounts = [
   };
 
   const handleSubmit = async () => {
-    // Check if all required fields are filled out before proceeding
+    setLoading(true); // Set loading state to true before starting the process
+  
     if (!formData.name || !formData.email || !formData.phone ) {
       alert('Please fill in all fields before submitting.');
-      return; // Prevent further execution if form is incomplete
+      setLoading(false); // Set loading state to false if validation fails
+      return;
     }
     console.log(formData)
   
@@ -111,11 +116,15 @@ const tlAccounts = [
         }
       } catch (error) {
         console.error('Error occurred during booking:', error);
+      } finally {
+        setLoading(false); // Set loading state to false after the request completes
       }
     } else {
-      setCurrentTab(3); // Proceed to the next tab for non-Free payments
+      setLoading(false); // Set loading to false if not 'free' ticket type
+      setCurrentTab(3);
     }
   };
+  
   
 
   const handlePaidTickets = async () => {
@@ -128,6 +137,7 @@ const tlAccounts = [
         numberOfTickets: payForwardCount || 1,
         paymentType: "paid",
       };
+      setIsProcessing(true);
       try {
         const response = await fetch('https://api.thelisteningsheeptickets.live/api/tickets/book', {
           method: 'POST',
@@ -146,6 +156,7 @@ const tlAccounts = [
         if (response.ok) {
           setShowConfirmation(true); // Show confirmation after a successful booking
           router.push(`/ticket-pending/${data.data.referenceNumber}`);
+          setIsProcessing(false);
         } else {
           console.error('Failed to book ticket:', data);
         }
@@ -300,9 +311,20 @@ const tlAccounts = [
       </label>
     </div>
     </div>
-       <button onClick={handleSubmit} className="w-full py-3 mt-4 bg-tls-Green text-white font-semibold rounded-lg hover:bg-tls-Green/80 focus:outline-none focus:ring-2 focus:ring-tls-Green focus:ring-offset-2">
-         Proceed
-       </button>
+    <button
+  onClick={handleSubmit}
+  className="w-full py-3 mt-4 bg-tls-Green text-white font-semibold rounded-lg hover:bg-tls-Green/80 focus:outline-none focus:ring-2 focus:ring-tls-Green focus:ring-offset-2"
+  disabled={loading}
+>
+  {loading ? (
+    <div className="flex justify-center items-center">
+      <div className="w-4 h-4 border-4 border-t-transparent border-solid border-white rounded-full animate-spin"></div>
+    </div>
+  ) : (
+    'Proceed'
+  )}
+</button>
+
      </div>
      
       )}
@@ -508,7 +530,13 @@ handlePaidTickets();
   <div className="p-4 border-t mt-4 flex justify-between items-center">
     <p className="text-red-500">Time left: {Math.floor(timer / 60)}:{String(timer % 60).padStart(2, "0")}</p>
     <Button onClick={handlePaidTickets} className="bg-emerald-800 p-4 text-white">
-      I've sent the Money
+    {isProcessing ? (
+    <div className="flex justify-center items-center">
+      <div className="w-4 h-4 border-4 border-t-transparent border-solid border-white rounded-full animate-spin"></div>
+    </div>
+  ) : (
+    "Confirm"
+  )}
     </Button>
   </div>
 </Dialog>

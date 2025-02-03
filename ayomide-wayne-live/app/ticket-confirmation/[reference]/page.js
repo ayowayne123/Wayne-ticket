@@ -21,7 +21,7 @@ export default function TicketBooked({ params }) {
             try {
                 const response = await fetch(`https://api.thelisteningsheeptickets.live/api/tickets/${ticketReference}`);
                 const data = await response.json();
-                if (data.success && data.data.status==="confimrmed") {
+                if (data.success && data.data.status==="confirmed") {
                     setTicketData(data.data);
                 } 
                 else if (data.success && data.data.status==="pending"){

@@ -69,9 +69,9 @@ export default function TicketPending({ params }) {
 
                 <div className="mt-6">
                     <h2 className="text-lg font-semibold text-gray-800">What to do next:</h2>
-                    <ul className="list-disc pl-6 mt-2 text-left text-gray-700">
+                    <ul className="list-disc pl-6 mt-2 text-left text-gray-700 ">
                         <li>Make sure your payment has been successfully completed.</li>
-                        <li className="pt-5">
+                        <li className="pt-5 leading-[150]%">
                             If payment is completed, please send a screenshot of payment alongside your reference number to <Link href="https://www.instagram.com/thelisteningsheep/"
                                 target="_blank"
                                 rel="noopener noreferrer" className="font-semibold text-black p-2 text-sm rounded bg-purple-500 text-white hover:bg-black">@thelisteningsheep</Link> on Instagram or via WhatsApp: 
@@ -80,7 +80,7 @@ export default function TicketPending({ params }) {
                                 rel="noopener noreferrer"
                                 className="font-semibold text-black p-2 text-sm rounded bg-green-500 text-white hover:bg-black">+905338767745</Link>.
                         </li>
-                        <li className="pt-5 text-gray-700">If you selected cash payment, please send your ticket reference number to request information on how to meet up on   <Link href="https://wa.me/905338767745"
+                        <li className="pt-5 text-gray-700 leading-[150]%">If you selected cash payment, please send your ticket reference number to request information on how to meet up on   <Link href="https://wa.me/905338767745"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="font-semibold text-black p-2 text-sm rounded bg-green-500 text-white hover:bg-black">+905338767745</Link>.</li>
