@@ -218,7 +218,7 @@ const tlAccounts = [
                   <span className={ticketType === type ? "text-black" : "text-gray-400"}>
                     {type === "free" ? "0.00TL" : "150TL"}
                   </span>
-                  <div className="flex items-center gap-2">
+                  {type === "pay_forward" &&  <div className="flex items-center gap-2">
                     <button
                       className={`p-2 rounded-full ${type === "pay_forward" && payForwardCount > 1 ? "bg-tls-Green text-white" : "bg-gray-200 text-gray-500 "}`}
                       onClick={() => type === "pay_forward" && setPayForwardCount(payForwardCount > 1 ? payForwardCount - 1 : 1)}
@@ -236,7 +236,8 @@ const tlAccounts = [
                     >
                       <FaPlus size={12} />
                     </button>
-                  </div>
+                  </div>}
+                 
                 </span>
               </label>
             </li>
