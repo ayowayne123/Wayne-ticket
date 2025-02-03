@@ -398,7 +398,7 @@ handlePaidTickets();
     <div className="w-full md:w-1/3 border-r border-gray-300 p-2 lg:p-4">
      
       <div className="mt-4">
-        {paymentMethod === "Naira transfer" ? (
+        {paymentMethod === "Naira Transfer" ? (
           <p className="font-medium">
             Total: <span className="text-gray-700">₦{totalAmount*48}</span>
           </p>
