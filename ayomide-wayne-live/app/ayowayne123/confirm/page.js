@@ -11,11 +11,17 @@ export default function TicketManagement() {
     async function fetchTickets() {
       try {
         setLoading(true);
-        const response = await fetch("https://api.thelisteningsheeptickets.live/api/tickets"); // Fetch all tickets
-        const data = await response.json();
-        setTickets(data);
+        const response = await fetch("https://api.thelisteningsheeptickets.live/api/tickets");
+        const result = await response.json();
+
+        if (result.success) {
+          setTickets(result.data);
+        } else {
+          toast.error("Failed to load tickets.");
+        }
       } catch (error) {
         console.error("Error fetching tickets:", error);
+        toast.error("An error occurred while fetching tickets.");
       } finally {
         setLoading(false);
       }
@@ -37,7 +43,9 @@ export default function TicketManagement() {
         }),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+
+      if ( result.success) {
         toast.success("Ticket confirmed successfully!");
         setTickets((prev) =>
           prev.map((ticket) =>
@@ -47,7 +55,7 @@ export default function TicketManagement() {
           )
         );
       } else {
-        toast.error("Failed to confirm ticket.");
+        toast.error(result.message || "Failed to confirm ticket.");
       }
     } catch (error) {
       console.error("Error confirming ticket:", error);
@@ -81,7 +89,7 @@ export default function TicketManagement() {
                 <td className="border border-gray-300 px-4 py-2">{ticket.name}</td>
                 <td className="border border-gray-300 px-4 py-2">{ticket.email}</td>
                 <td className="border border-gray-300 px-4 py-2">{ticket.referenceNumber}</td>
-                <td className="border border-gray-300 px-4 py-2">{ticket.ticketType}</td>
+                <td className="border border-gray-300 px-4 py-2">{ticket.paymentType}</td>
                 <td
                   className={`border border-gray-300 px-4 py-2 ${
                     ticket.status === "confirmed" ? "text-green-600" : "text-red-500"
@@ -93,7 +101,7 @@ export default function TicketManagement() {
                   {ticket.status === "pending" && (
                     <button
                       onClick={() => confirmTicket(ticket.referenceNumber)}
-                      className="px-4 py-2 text-white bg-green-600 hover:bg-green-700 rounded-md"
+                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                     >
                       Confirm
                     </button>
